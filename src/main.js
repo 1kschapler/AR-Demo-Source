@@ -43,33 +43,6 @@ function createLineFromOrigin(vector, color) {
     return new THREE.Line(geometry, material);
 }
 
-function loadSurface(stlLoader, surfaceName) {
-    stlLoader.load(
-        'models/3DBenchy.stl',
-        (geometry) => {
-            const stlModel = new THREE.Mesh(geometry, material);
-            stlModel.position.x = 0;
-            stlModel.position.y = -0.5;
-            stlModel.position.z = -1;
-            stlModel.scale.x = 0.01;
-            stlModel.scale.y = 0.01;
-            stlModel.scale.z = 0.01;
-            stlModel.rotateX(-Math.PI / 2)
-
-            controls.target.copy(stlModel.position)
-
-            scene.add(stlModel);
-        },
-        (xhr) => {
-            console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
-        },
-        (error) => {
-            console.log(error)
-        }
-    )
-
-}
-
 function init() {
 
     //renderer
@@ -175,13 +148,14 @@ function init() {
                 stlModel.position.x = 0;
                 stlModel.position.y = -0.5;
                 stlModel.position.z = -1;
-                stlModel.scale.x = 0.01;
-                stlModel.scale.y = 0.01;
-                stlModel.scale.z = 0.01;
+                stlModel.scale.x = 0.001;
+                stlModel.scale.y = 0.001;
+                stlModel.scale.z = 0.001;
                 stlModel.rotateX(-Math.PI / 2)
 
                 controls.target.copy(stlModel.position)
 
+                surfaceGroup.name = "allSurfaces";
                 surfaceGroup.add(stlModel);
             },
             (xhr) => {
@@ -215,6 +189,14 @@ function init() {
 
         renderer.setSize(window.innerWidth, window.innerHeight);
     });
+
+    function onSelectAll() {
+        console.log("onSelectAll");
+        scene.getObjectByName("allSurfaces").rotateZ(0.175); // 10 deg
+    }
+    let controller = renderer.xr.getController( 0 );
+	controller.addEventListener( 'select', onSelectAll );
+	scene.add( controller );
 
     //add AR Button
     document.body.appendChild(ARButton.createButton(renderer));
