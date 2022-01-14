@@ -3,6 +3,8 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader'
 import Stats from 'three/examples/jsm/libs/stats.module'
 import { ARButton } from 'three/examples/jsm/webxr/ARButton.js';
+import { HackathonButton } from './hackathonButton';
+import { RotateButton } from './rotateButton';
 
 // global variables used for handlers etc.
 let container;
@@ -115,7 +117,7 @@ function init() {
     //load Model
     const loader = new STLLoader();
 
-    const surfaces = ["skin", "cortex", "tumor", "trentorium", "vessels", "ventricles"];
+    const surfaces = ["skin", "cortex", "tumor", "tentorium", "vessels", "ventricles"];
 
     const surfaceGroup = new THREE.Group();
 
@@ -147,11 +149,12 @@ function init() {
                 const stlModel = new THREE.Mesh(geometry, material);
                 stlModel.position.x = 0;
                 stlModel.position.y = 0;
-                stlModel.position.z = 0;
-                stlModel.scale.x = 0.001;
-                stlModel.scale.y = 0.001;
-                stlModel.scale.z = 0.001;
+                stlModel.position.z = -1;
+                stlModel.scale.x = 0.005;
+                stlModel.scale.y = 0.005;
+                stlModel.scale.z = 0.005;
                 stlModel.rotateX(-Math.PI / 2)
+                stlModel.name = surfaceName;
 
                 controls.target.copy(stlModel.position)
 
@@ -196,12 +199,117 @@ function init() {
         let allSurf = scene.getObjectByName("allSurfaces");
         allSurf.rotateY(0.175); // 10 deg
     }
-    let controller = renderer.xr.getController( 0 );
-	controller.addEventListener( 'select', onSelectAll );
-	scene.add( controller );
+    // let controller = renderer.xr.getController( 0 );
+	// controller.addEventListener( 'select', onSelectAll );
+	// scene.add( controller );
+
+    var arButton = ARButton.createButton(renderer, { 
+        requiredFeatures: ['hit-test'], 
+        optionalFeatures: [ 'dom-overlay', 'dom-overlay-for-handheld-ar' ], 
+        domOverlay: { root: document.body } });
+
+    let relativePositionX = 110;
+    let relativePositionY = 310;
+
+    let buttonSize = 80;
+
+    var skinToggleButton = HackathonButton.createButton(renderer, "Skin", relativePositionY, relativePositionX, "skin", scene, { 
+        requiredFeatures: ['hit-test'], 
+        optionalFeatures: [ 'dom-overlay', 'dom-overlay-for-handheld-ar' ], 
+        domOverlay: { root: document.body } });
+    var cortexToggleButton = HackathonButton.createButton(renderer, "Cortex", relativePositionY, relativePositionX+buttonSize, "cortex", scene, { 
+        requiredFeatures: ['hit-test'], 
+        optionalFeatures: [ 'dom-overlay', 'dom-overlay-for-handheld-ar' ], 
+        domOverlay: { root: document.body } });
+    var vesselsToggleButton = HackathonButton.createButton(renderer, "Vessels", relativePositionY, relativePositionX+(buttonSize*2), "vessels", scene, { 
+        requiredFeatures: ['hit-test'], 
+        optionalFeatures: [ 'dom-overlay', 'dom-overlay-for-handheld-ar' ], 
+        domOverlay: { root: document.body } });
+    var tumorToggleButton = HackathonButton.createButton(renderer, "Tumor", relativePositionY, relativePositionX+(buttonSize*3), "tumor", scene, { 
+        requiredFeatures: ['hit-test'], 
+        optionalFeatures: [ 'dom-overlay', 'dom-overlay-for-handheld-ar' ], 
+        domOverlay: { root: document.body } });
+    var tentoriumToggleButton = HackathonButton.createButton(renderer, "Tentorium", relativePositionY, relativePositionX+(buttonSize*4), "tentorium", scene, { 
+        requiredFeatures: ['hit-test'], 
+        optionalFeatures: [ 'dom-overlay', 'dom-overlay-for-handheld-ar' ], 
+        domOverlay: { root: document.body } });
+    var ventriclesToggleButton = HackathonButton.createButton(renderer, "Ventricles", relativePositionY, relativePositionX+(buttonSize*5), "ventricles", scene, { 
+        requiredFeatures: ['hit-test'], 
+        optionalFeatures: [ 'dom-overlay', 'dom-overlay-for-handheld-ar' ], 
+        domOverlay: { root: document.body } });
+
+    // var skinToggleButton = HackathonButton.createButton(renderer, "Skin", relativePositionY, relativePositionX, "skin", scene, { 
+    //     requiredFeatures: ['hit-test'], 
+    //     optionalFeatures: [ 'dom-overlay', 'dom-overlay-for-handheld-ar' ], 
+    //     domOverlay: { root: document.body } });
+    // var cortexToggleButton = HackathonButton.createButton(renderer, "Cortex", relativePositionY, relativePositionX+buttonSize, "cortex", scene, { 
+    //     requiredFeatures: ['hit-test'], 
+    //     optionalFeatures: [ 'dom-overlay', 'dom-overlay-for-handheld-ar' ], 
+    //     domOverlay: { root: document.body } });
+    // var vesselsToggleButton = HackathonButton.createButton(renderer, "Vessels", relativePositionY, relativePositionX+(buttonSize*2), "vessels", scene, { 
+    //     requiredFeatures: ['hit-test'], 
+    //     optionalFeatures: [ 'dom-overlay', 'dom-overlay-for-handheld-ar' ], 
+    //     domOverlay: { root: document.body } });
+    // var tumorToggleButton = HackathonButton.createButton(renderer, "Tumor", relativePositionY, relativePositionX+(buttonSize*3), "tumor", scene, { 
+    //     requiredFeatures: ['hit-test'], 
+    //     optionalFeatures: [ 'dom-overlay', 'dom-overlay-for-handheld-ar' ], 
+    //     domOverlay: { root: document.body } });
+    // var tentoriumToggleButton = HackathonButton.createButton(renderer, "Tentorium", relativePositionY, relativePositionX+(buttonSize*4), "tentorium", scene, { 
+    //     requiredFeatures: ['hit-test'], 
+    //     optionalFeatures: [ 'dom-overlay', 'dom-overlay-for-handheld-ar' ], 
+    //     domOverlay: { root: document.body } });
+    // var ventriclesToggleButton = HackathonButton.createButton(renderer, "Ventricles", relativePositionY, relativePositionX+(buttonSize*5), "ventricles", scene, { 
+    //     requiredFeatures: ['hit-test'], 
+    //     optionalFeatures: [ 'dom-overlay', 'dom-overlay-for-handheld-ar' ], 
+    //     domOverlay: { root: document.body } });
+
+    let rotateRelativePositionX = -450;
+    let rotateRelativePositionY = 310;
+    let rotateButtonSize = 80;
+
+    var rotateX = RotateButton.createButton(renderer, "X", rotateRelativePositionY, rotateRelativePositionX, surfaceGroup, scene, "X", { 
+        requiredFeatures: ['hit-test'], 
+        optionalFeatures: [ 'dom-overlay', 'dom-overlay-for-handheld-ar' ], 
+        domOverlay: { root: document.body } });
+    var rotateXNeg = RotateButton.createButton(renderer, "XNeg", rotateRelativePositionY, rotateRelativePositionX+rotateButtonSize, surfaceGroup, scene, "XNeg",{ 
+        requiredFeatures: ['hit-test'], 
+        optionalFeatures: [ 'dom-overlay', 'dom-overlay-for-handheld-ar' ], 
+        domOverlay: { root: document.body } });
+    var rotateY = RotateButton.createButton(renderer, "Y", rotateRelativePositionY, rotateRelativePositionX+(rotateButtonSize*2), surfaceGroup, scene, "Y",{ 
+        requiredFeatures: ['hit-test'], 
+        optionalFeatures: [ 'dom-overlay', 'dom-overlay-for-handheld-ar' ], 
+        domOverlay: { root: document.body } });
+    var rotateYNeg = RotateButton.createButton(renderer, "YNeg", rotateRelativePositionY, rotateRelativePositionX+(rotateButtonSize*3), surfaceGroup, scene, "YNeg",{ 
+        requiredFeatures: ['hit-test'], 
+        optionalFeatures: [ 'dom-overlay', 'dom-overlay-for-handheld-ar' ], 
+        domOverlay: { root: document.body } });
+    var rotateZ = RotateButton.createButton(renderer, "Z", rotateRelativePositionY, rotateRelativePositionX+(rotateButtonSize*4), surfaceGroup, scene, "Z",{ 
+        requiredFeatures: ['hit-test'], 
+        optionalFeatures: [ 'dom-overlay', 'dom-overlay-for-handheld-ar' ], 
+        domOverlay: { root: document.body } });
+    var rotateZNeg = RotateButton.createButton(renderer, "ZNeg", rotateRelativePositionY, rotateRelativePositionX+(rotateButtonSize*5), surfaceGroup, scene, "ZNeg",{ 
+        requiredFeatures: ['hit-test'], 
+        optionalFeatures: [ 'dom-overlay', 'dom-overlay-for-handheld-ar' ], 
+        domOverlay: { root: document.body } });
 
     //add AR Button
-    document.body.appendChild(ARButton.createButton(renderer));
+    //document.body.appendChild(ARButton.createButton(renderer));
+    document.body.appendChild(arButton);
+
+    document.body.appendChild(skinToggleButton);
+    document.body.appendChild(cortexToggleButton);
+    document.body.appendChild(vesselsToggleButton);
+    document.body.appendChild(tumorToggleButton);
+    document.body.appendChild(tentoriumToggleButton);
+    document.body.appendChild(ventriclesToggleButton);
+
+    document.body.appendChild(rotateX);
+    document.body.appendChild(rotateXNeg);
+    document.body.appendChild(rotateY);
+    document.body.appendChild(rotateYNeg);
+    document.body.appendChild(rotateZ);
+    document.body.appendChild(rotateZNeg);
+
     renderer.xr.enabled = true;
 }
 
