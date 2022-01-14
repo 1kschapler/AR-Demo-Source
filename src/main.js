@@ -146,8 +146,8 @@ function init() {
 
                 const stlModel = new THREE.Mesh(geometry, material);
                 stlModel.position.x = 0;
-                stlModel.position.y = -0.5;
-                stlModel.position.z = -1;
+                stlModel.position.y = 0;
+                stlModel.position.z = 0;
                 stlModel.scale.x = 0.001;
                 stlModel.scale.y = 0.001;
                 stlModel.scale.z = 0.001;
@@ -167,6 +167,7 @@ function init() {
         )
     }
 
+    surfaceGroup.translateX(0).translateY(-0.5).translateZ(-1);
     scene.add(surfaceGroup);
 
     scene.add(createOriginLines())
@@ -192,7 +193,8 @@ function init() {
 
     function onSelectAll() {
         console.log("onSelectAll");
-        scene.getObjectByName("allSurfaces").rotateZ(0.175); // 10 deg
+        let allSurf = scene.getObjectByName("allSurfaces");
+        allSurf.rotateY(0.175); // 10 deg
     }
     let controller = renderer.xr.getController( 0 );
 	controller.addEventListener( 'select', onSelectAll );
