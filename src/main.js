@@ -43,6 +43,33 @@ function createLineFromOrigin(vector, color) {
     return new THREE.Line(geometry, material);
 }
 
+function loadSurface(stlLoader, surfaceName) {
+    stlLoader.load(
+        'models/3DBenchy.stl',
+        (geometry) => {
+            const stlModel = new THREE.Mesh(geometry, material);
+            stlModel.position.x = 0;
+            stlModel.position.y = -0.5;
+            stlModel.position.z = -1;
+            stlModel.scale.x = 0.01;
+            stlModel.scale.y = 0.01;
+            stlModel.scale.z = 0.01;
+            stlModel.rotateX(-Math.PI / 2)
+
+            controls.target.copy(stlModel.position)
+
+            scene.add(stlModel);
+        },
+        (xhr) => {
+            console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
+        },
+        (error) => {
+            console.log(error)
+        }
+    )
+
+}
+
 function init() {
 
     //renderer
@@ -74,55 +101,112 @@ function init() {
     //init scene
     scene = new THREE.Scene();
 
-    //load content
-    let material = new THREE.MeshStandardMaterial({
-        color: 'rgb(150,150,150)',
-        side: THREE.DoubleSide,
-        roughness: 0.6,
-        metalness: 0.9
-    });
+    const materials = {
+        skin: {
+            color: "#daa385",
+            metalness: 0.10,
+            roughness: 0.65,
+        },
+        skull: {
+            color: "#e2d9cb",
+            metalness: 0.15,
+            roughness: 0.7,
+        },
+        cortex: {
+            color: "#f7c0aa",
+            metalness: 0.15,
+            roughness: 0.50
+        },
+        tentorium: {
+            color: "#c5ac7e",
+            metalness: 0.15,
+            roughness: 0.60
+        },
+        tumor: {
+            color: "#00e80d",
+            metalness: 0.15,
+            roughness: 0.60
+        },
+        ventricles: {
+            color: "#2053fa",
+            metalness: 0.15,
+            roughness: 0.60
+        },
+        vessels: {
+            color: "#d40000",
+            metalness: 0.15,
+            roughness: 0.60
+        }
+    };
 
     //load Model
     const loader = new STLLoader();
 
-    loader.load(
-        'models/3DBenchy.stl',
-        (geometry) => {
-            const stlModel = new THREE.Mesh(geometry, material);
-            stlModel.position.x = 0;
-            stlModel.position.y = -0.5;
-            stlModel.position.z = -1;
-            stlModel.scale.x = 0.01;
-            stlModel.scale.y = 0.01;
-            stlModel.scale.z = 0.01;
-            stlModel.rotateX(-Math.PI / 2)
+    const surfaces = ["skin", "cortex", "tumor", "trentorium", "vessels", "ventricles"];
 
-            controls.target.copy(stlModel.position)
+    const surfaceGroup = new THREE.Group();
 
-            scene.add(stlModel);
-        },
-        (xhr) => {
-            console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
-        },
-        (error) => {
-            console.log(error)
-        }
-    )
+    for (let i = 0; i < surfaces.length; i++) {
+        let surfaceName = surfaces[i];
+
+        loader.load(
+            'models/'+surfaceName+'.stl',
+            (geometry) => {
+                let material;
+                if (surfaceName == "skin") {
+                    material = new THREE.MeshStandardMaterial({
+                        color: materials[surfaceName]["color"],
+                        side: THREE.DoubleSide,
+                        transparent: true,
+                        opacity: 0.5,
+                        roughness: materials[surfaceName]["roughness"],
+                        metalness: materials[surfaceName]["metalness"]
+                    });
+                } else {
+                    material = new THREE.MeshStandardMaterial({
+                        color: materials[surfaceName]["color"],
+                        side: THREE.DoubleSide,
+                        roughness: materials[surfaceName]["roughness"],
+                        metalness: materials[surfaceName]["metalness"]
+                    });
+                }
+
+                const stlModel = new THREE.Mesh(geometry, material);
+                stlModel.position.x = 0;
+                stlModel.position.y = -0.5;
+                stlModel.position.z = -1;
+                stlModel.scale.x = 0.01;
+                stlModel.scale.y = 0.01;
+                stlModel.scale.z = 0.01;
+                stlModel.rotateX(-Math.PI / 2)
+
+                controls.target.copy(stlModel.position)
+
+                surfaceGroup.add(stlModel);
+            },
+            (xhr) => {
+                console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
+            },
+            (error) => {
+                console.log(error)
+            }
+        )
+    }
+
+    scene.add(surfaceGroup);
 
     scene.add(createOriginLines())
 
     let ambient = new THREE.HemisphereLight(0xffffff, 0x080820, 2);
     scene.add(ambient)
 
-    let light = new THREE.PointLight(0xffffff, 5);
-    light.position.z = 0;
-    light.position.y = 1;
-    light.position.x = 1;
-    light.castShadow = true;
+    // let light = new THREE.PointLight(0xffffff, 5);
+    // light.position.z = 0;
+    // light.position.y = 1;
+    // light.position.x = 1;
+    // light.castShadow = true;
 
-    scene.add(light);
-
-
+    // scene.add(light);
 
     //init eventListeners
     window.addEventListener('resize', () => {
